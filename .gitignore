@@ -59,10 +59,5 @@ Thumbs.db
 *.fls
 *.synctex.gz
 
-# Data files (if you don't want to include large data)
-# *.npy
-# strain.npy
-
 # Output files
 *.pdf
-*.html 
