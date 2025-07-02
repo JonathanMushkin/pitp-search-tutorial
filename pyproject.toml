@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gw-search-tutorial"
+version = "0.1.0"
+description = "Gravitational wave search tutorial"
+authors = [
+    {name = "Jonathan Mushkin", email = "jonathan.mushkin@weizmann.ac.il"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "scipy",
+    "numba",
+    "matplotlib",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "jupyter",
+    "notebook",
+    "ipykernel",
+]
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+exclude = ["docs*"]
