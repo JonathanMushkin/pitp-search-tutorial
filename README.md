@@ -17,7 +17,7 @@ Note: The timestamps corresponding to the strain are not uploaded due to size co
 
 ## Learning Objectives
 
-In this notebook, we will practice:
+In the first tutorial notebook, we will practice:
 
 - Using FFT/RFFT to perform matched-filter searches in gravitational wave data
 - Computing test statistics for signal detection
