@@ -4,12 +4,6 @@ from scipy import stats
 from scipy import interpolate
 import numba
 
-"""
-This file contains functions that are useful for the exam, and skeletons 
-of functions that you will need to complete in the exam.
-
-"""
-######################################################################
 # Constants
 MTSUN_SI = 4.925491025543576e-06  # solar mass in seconds
 MCHIRP_RANGE = (1.15, 1.2)  # in solar masses
@@ -29,7 +23,7 @@ def phases_to_linear_free_phases(
     Convert phases to linear-free phases by removing linear frequency evolution.
 
     Args:
-        phases: Array of phases (2D array: n_phases x n_frequencies)
+        phases: Array of phases (1D or 2D array: n_phases x n_frequencies)
         freqs: Array of frequencies (Hz)
         weights: Array of weights for frequency weighting
 
@@ -43,13 +37,20 @@ def phases_to_linear_free_phases(
     # define the linear component
     psi_1 = (freqs - f_bar) / sigma_f
     # find the linear component projection on each phase
-    c_1 = np.sum(phases * weights**2 * psi_1, axis=1)
+    c_1 = np.sum(phases * weights**2 * psi_1, axis=-1)
     # remove linear component from each phase
-    phases_shifted = phases - np.outer(c_1, psi_1)
-    # fix phase at f_bar to be zero
-    phases_shifted -= np.array(
-        [np.interp(x=f_bar, xp=freqs, fp=p) for p in phases_shifted]
-    )[..., None]
+    if phases.ndim == 1:
+        # Handle 1D case: phases is a single phase array
+        phases_shifted = phases - c_1 * psi_1
+        # fix phase at f_bar to be zero
+        phases_shifted -= np.interp(x=f_bar, xp=freqs, fp=phases_shifted)
+    else:
+        # Handle 2D case: phases contains multiple phase arrays
+        phases_shifted = phases - np.outer(c_1, psi_1)
+        # fix phase at f_bar to be zero
+        phases_shifted -= np.array(
+            [np.interp(x=f_bar, xp=freqs, fp=p) for p in phases_shifted]
+        )[..., None]
     return phases_shifted
 
 
@@ -206,8 +207,6 @@ def draw_mass_samples(n_samples: int) -> Tuple[np.ndarray, np.ndarray]:
     return m1_samples, m2_samples
 
 
-######################################################################
-
 ##
 # Functions skeletons to be completed in the exam
 ##
@@ -229,16 +228,11 @@ def correlate(
     Returns:
         Array of correlation values in time domain
     """
-    # HINT: Use np.fft.irfft to compute the inverse FFT
-    # HINT: If w is provided, multiply both x and y by the whitening filter
-    # HINT: The correlation is the inverse FFT of x * y.conj()
-
+    # if w is not None, multiply x and y by the whitening filter
     if w is None:
-        # TODO: Compute correlation without whitening filter
-        return np.zeros(len(x) // 2 + 1)  # Placeholder return
+        return np.fft.irfft(x * y.conj())
     else:
-        # TODO: Compute correlation with whitening filter
-        return np.zeros(len(x) // 2 + 1)  # Placeholder return
+        return np.fft.irfft((x * w) * (y * w).conj())
 
 
 def select_points_without_clutter(
@@ -257,17 +251,19 @@ def select_points_without_clutter(
     Returns:
         Tuple of (subset_points, indices) where indices are the original indices
     """
-    # HINT: Initialize empty lists for subset and indices
-    # HINT: Iterate through all points
-    # HINT: For each point, check if it's far enough from all existing subset points
-    # HINT: Use np.linalg.norm to compute distances
-    # HINT: If point is far enough, add it to subset and record its index
-
     subset = []
     indices = []
+    for i, point in enumerate(points):
+        # Check if point is far enough from all existing points
+        too_close = False
+        for subset_point in subset:
+            if np.linalg.norm(point - subset_point) < distance_scale:
+                too_close = True
+                break  # No need to check other points once we find one too close
 
-    # TODO: Implement the selection logic
-    # Placeholder return to avoid errors
+        if not too_close:
+            subset.append(point)
+            indices.append(i)
     return np.array(subset), indices
 
 
@@ -284,14 +280,10 @@ def complex_overlap_timeseries(
     Returns:
         Array of complex SNR time series
     """
-    # HINT: You need to compute both cosine and sine components
-    # HINT: Use the correlate function for both components
-    # HINT: The sine component uses template * 1j
-    # HINT: Return z_cos + 1j * z_sin
+    z_cos = correlate(data, template)
+    z_sin = correlate(data, template * 1j)
 
-    # TODO: Compute complex overlap timeseries
-    # Placeholder return to avoid errors
-    return np.zeros(len(data) // 2 + 1, dtype=complex)
+    return z_cos + 1j * z_sin
 
 
 def snr2_timeseries(template: np.ndarray, data: np.ndarray) -> np.ndarray:
@@ -305,12 +297,7 @@ def snr2_timeseries(template: np.ndarray, data: np.ndarray) -> np.ndarray:
     Returns:
         Array of (real) SNR^2 time series
     """
-    # HINT: Use the complex_overlap_timeseries function
-    # HINT: Take the absolute value squared: |z|^2
-
-    # TODO: Compute SNR^2 timeseries
-    # Placeholder return to avoid errors
-    return np.zeros(len(data) // 2 + 1)
+    return np.abs(complex_overlap_timeseries(template, data)) ** 2
 
 
 @numba.njit()
@@ -327,15 +314,13 @@ def max_argmax_over_n_samples(
     Returns:
         Tuple of (maxs, argmaxs) arrays
     """
-    # HINT: Initialize arrays for maxs and argmaxs
-    # HINT: Loop through segments of length n
-    # HINT: For each segment, find max and argmax
-    # HINT: Add the segment start index to argmax to get global index
-
     length = len(x)
     maxs = np.zeros(length // n)
     argmaxs = np.zeros(length // n, dtype=np.int64)
+    for i in range(length // n):
+        start = i * n
+        end = min((i + 1) * n, length)
+        maxs[i] = np.max(x[start:end])
+        argmaxs[i] = np.argmax(x[start:end]) + start
 
-    # TODO: Implement the segment-wise max and argmax logic
-    # Placeholder return to avoid errors
     return maxs, argmaxs
