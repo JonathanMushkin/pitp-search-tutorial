@@ -46,8 +46,8 @@ where the tilde denotes the whitened series.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/JonathanMushkin/GW_search_tutorial.git
-cd GW_search_tutorial
+git clone https://github.com/JonathanMushkin/pitp-search-tutorial.git
+cd pitp-search-tutorial
 ```
 
 ### 2. Create Environment Using pyproject.toml
@@ -99,7 +99,7 @@ jupyter notebook pitp-gw-search-1.ipynb
 ## Repository Structure
 
 ```
-GW_search_tutorial/
+pitp-search-tutorial/
 ├── README.md                    # This file
 ├── pyproject.toml              # Environment and dependency configuration
 ├── pitp-gw-search-1.ipynb      # Main tutorial notebook
