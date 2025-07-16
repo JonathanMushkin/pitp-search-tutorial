@@ -50,14 +50,14 @@ git clone https://github.com/JonathanMushkin/pitp-search-tutorial.git
 cd pitp-search-tutorial
 ```
 
-### 2. Create Environment Using pyproject.toml
+### 2. Create Environment
 
-The repository includes a `pyproject.toml` file that defines all necessary dependencies. You can use it to create a conda environment:
+The repository includes both a `pyproject.toml` file and an `environment.yml` file that define all necessary dependencies.
 
-#### Option A: Using conda/mamba (recommended)
+#### Option A: Using conda/mamba with environment.yml (recommended)
 
 ```bash
-# Create environment from pyproject.toml
+# Create environment from environment.yml
 conda env create -f environment.yml
 conda activate gw_detection_tutorial
 ```
@@ -101,7 +101,8 @@ jupyter notebook pitp-gw-search-1.ipynb
 ```
 pitp-search-tutorial/
 ├── README.md                    # This file
-├── pyproject.toml              # Environment and dependency configuration
+├── pyproject.toml              # Python package configuration
+├── environment.yml             # Conda environment configuration
 ├── pitp-gw-search-1.ipynb      # Main tutorial notebook
 ├── gw_search_functions.py      # Helper functions and utilities
 ├── strain.npy                  # LIGO strain data (downsampled)
