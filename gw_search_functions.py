@@ -1,7 +1,6 @@
 from typing import Tuple, Optional, Union, List
 import numpy as np
 from scipy import stats
-from scipy import interpolate
 import numba
 
 # Constants
@@ -205,11 +204,6 @@ def draw_mass_samples(n_samples: int) -> Tuple[np.ndarray, np.ndarray]:
     ).ppf(u[:, 1])
     m1_samples, m2_samples = mchirp_q_to_m1m2(mchirp_samples, q_samples)
     return m1_samples, m2_samples
-
-
-##
-# Functions skeletons to be completed in the exam
-##
 
 
 def correlate(
