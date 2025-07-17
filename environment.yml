@@ -1,0 +1,17 @@
+name: gw_detection_tutorial
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - numba
+  - matplotlib
+  - tqdm
+  - jupyter
+  - notebook
+  - ipykernel
+  - pip
+  # Optional development dependencies:
+  # - pip:
+  #   - ruff 
